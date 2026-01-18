@@ -1,6 +1,6 @@
 import { Check, CheckCircle } from "lucide-react";
-import whyImg from "../../assets/WhyChooseEduExam.png";
-import monitorImg from "../../assets/WhyChooseEduExam2.png"; // 
+import whyImg from "../../assets/whychooseEduexam.png";
+import monitorImg from "../../assets/whychooseEduExam2.png"; // 
 
 export default function WhyChooseEduExam() {
   return (
