@@ -31,7 +31,7 @@ export default function MonitoringResults() {
     const fetchTeacherExams = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/teacher/${teacher.id}/exams`
+          `https://eduexam-5c0p.onrender.com/api/teacher/${teacher.id}/exams`
         );
 
         setExams(res.data);
@@ -55,7 +55,7 @@ export default function MonitoringResults() {
     const fetchAttempts = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/exam/${selectedExam.examKey}/attempts`
+          `https://eduexam-5c0p.onrender.com/api/exam/${selectedExam.examKey}/attempts`
         );
 
         setAttempts(res.data.attempts || []);

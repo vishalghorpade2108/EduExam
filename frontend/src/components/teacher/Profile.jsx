@@ -19,7 +19,7 @@ export default function Profile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/teacher/profile", {
+      const res = await axios.get("https://eduexam-5c0p.onrender.com/api/teacher/profile", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

@@ -86,11 +86,11 @@ const [answeredCount, setAnsweredCount] = useState(0);
     const fetchExamData = async () => {
       try {
         const examRes = await axios.get(
-          `http://localhost:5000/api/exam/key/${examKey}`
+          `https://eduexam-5c0p.onrender.com/api/exam/key/${examKey}`
         );
 
         const questionRes = await axios.get(
-          `http://localhost:5000/api/exam/${examKey}/questions`
+          `https://eduexam-5c0p.onrender.com/api/exam/${examKey}/questions`
         );
         console.log(examRes.data);
          setExamInfo(examRes.data);
@@ -101,7 +101,7 @@ const [answeredCount, setAnsweredCount] = useState(0);
         // restore saved answers
 try {
   const savedRes = await axios.get(
-    `http://localhost:5000/api/examAttempt/${examKey}/saved-answers/${studentId}`
+    `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/saved-answers/${studentId}`
   );
 
   if (savedRes.data?.answers) {
@@ -236,7 +236,7 @@ try {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/examAttempt/${examKey}/submit`,
+        `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/submit`,
         {
           studentId,
           answers,
@@ -268,7 +268,7 @@ try {
   try {
     setSaving(true);
     await axios.post(
-      `http://localhost:5000/api/examAttempt/${examKey}/save-answer`,
+      `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/save-answer`,
       {
         studentId,
         questionId: qid,
@@ -288,7 +288,7 @@ useEffect(() => {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/examAttempt/${examKey}/autosave`,
+        `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/autosave`,
         {
           studentId,
           answers,

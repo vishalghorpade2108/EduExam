@@ -52,7 +52,7 @@ export default function DashboardExams() {
   useEffect(() => {
     const fetchExams = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/exam/teacher", {
+        const res = await fetch("https://eduexam-5c0p.onrender.com/api/exam/teacher", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -84,7 +84,7 @@ export default function DashboardExams() {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/exam/${examId}/delete`,
+      `https://eduexam-5c0p.onrender.com/api/exam/${examId}/delete`,
       {
         method: "DELETE",
         headers: {

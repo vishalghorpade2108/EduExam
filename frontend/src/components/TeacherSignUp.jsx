@@ -103,7 +103,7 @@ const [menuOpen, setMenuOpen] = useState(false);
       setApiError("");
 
       const res = await fetch(
-        "http://localhost:5000/api/auth/send-verification",
+        "https://eduexam-5c0p.onrender.com/api/auth/send-verification",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -133,7 +133,7 @@ const [menuOpen, setMenuOpen] = useState(false);
       setApiError("");
 
       const res = await fetch(
-        "http://localhost:5000/api/auth/verify-email",
+        "https://eduexam-5c0p.onrender.com/api/auth/verify-email",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -165,7 +165,7 @@ const [menuOpen, setMenuOpen] = useState(false);
       setApiError("");
 
       const res = await fetch(
-        "http://localhost:5000/api/auth/register",
+        "https://eduexam-5c0p.onrender.com/api/auth/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -210,7 +210,7 @@ const handleExamKeySubmit = async () => {
 
   try {
     const res = await axios.get(
-      `http://localhost:5000/api/exam/verify/${examKey}`
+      `https://eduexam-5c0p.onrender.com/api/exam/verify/${examKey}`
     );
 
     if (res.data.success) {

@@ -20,7 +20,7 @@ const handleExamKeySubmit = async () => {
 
   try {
     const res = await axios.get(
-      `http://localhost:5000/api/exam/verify/${examKey}`
+      `https://eduexam-5c0p.onrender.com/api/exam/verify/${examKey}`
     );
 
     if (res.data.success) {

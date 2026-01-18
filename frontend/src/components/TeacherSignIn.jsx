@@ -29,7 +29,7 @@ const [examKey, setExamKey] = useState("");
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch("https://eduexam-5c0p.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +71,7 @@ const [examKey, setExamKey] = useState("");
   
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/exam/verify/${examKey}`
+        `https://eduexam-5c0p.onrender.com/api/exam/verify/${examKey}`
       );
   
       if (res.data.success) {

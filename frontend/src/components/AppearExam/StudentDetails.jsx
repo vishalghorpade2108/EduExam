@@ -28,7 +28,7 @@ export default function StudentDetails() {
     const fetchExam = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/exam/key/${examKey}`
+          `https://eduexam-5c0p.onrender.com/api/exam/key/${examKey}`
         );
         setExam(res.data);
         setTeacherName(res.data.teacherName);
@@ -58,7 +58,7 @@ export default function StudentDetails() {
     setLoading(true);
 
     const res = await axios.post(
-      `http://localhost:5000/api/exam/${examKey}/student`,
+      `https://eduexam-5c0p.onrender.com/api/exam/${examKey}/student`,
       formData
     );
 

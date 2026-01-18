@@ -90,7 +90,7 @@ export default function ExamInstructions() {
 
       // 🔴 Mark exam as started in backend
       await axios.post(
-        `http://localhost:5000/api/exam/${examKey}/start`,
+        `https://eduexam-5c0p.onrender.com/api/exam/${examKey}/start`,
         { studentId }
       );
 
