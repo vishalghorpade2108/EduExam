@@ -1,4 +1,4 @@
-export default function Step2Settings({ data, setData, errors }) {
+export default function Step2Settings({ data, setData }) {
   const THEME = "#2a384a";
 
   const handleChange = (e) => {
@@ -33,16 +33,10 @@ export default function Step2Settings({ data, setData, errors }) {
           min="1"
           value={data.duration}
           onChange={handleChange}
-          className={`w-full border px-4 py-2 rounded ${
-            errors.duration ? "border-red-500" : ""
-          }`}
+          className={`w-full border px-4 py-2 rounded`}
           placeholder="e.g. 90"
         />
-        {errors.duration && (
-          <p className="text-sm text-red-500 mt-1">
-            Duration is required
-          </p>
-        )}
+      
       </div>
 {/* Total Exam Marks */}
 <div>
@@ -55,16 +49,10 @@ export default function Step2Settings({ data, setData, errors }) {
     min="1"
     value={data.totalMarks}
     onChange={handleChange}
-    className={`w-full border px-4 py-2 rounded ${
-      errors.totalMarks ? "border-red-500" : ""
-    }`}
+    className= "w-full border px-4 py-2 rounded "
     placeholder="e.g. 100"
   />
-  {errors.totalMarks && (
-    <p className="text-sm text-red-500 mt-1">
-      Total exam marks are required
-    </p>
-  )}
+  
 </div>
 
       {/* Start & End */}
@@ -78,9 +66,7 @@ export default function Step2Settings({ data, setData, errors }) {
             name="startTime"
             value={data.startTime}
             onChange={handleChange}
-            className={`w-full border px-4 py-2 rounded ${
-              errors.startTime ? "border-red-500" : ""
-            }`}
+            className= "w-full border px-4 py-2 rounded "
           />
         </div>
 
@@ -93,9 +79,7 @@ export default function Step2Settings({ data, setData, errors }) {
             name="endTime"
             value={data.endTime}
             onChange={handleChange}
-            className={`w-full border px-4 py-2 rounded ${
-              errors.endTime ? "border-red-500" : ""
-            }`}
+            className="w-full border px-4 py-2 rounded "
           />
         </div>
       </div>
@@ -109,9 +93,8 @@ export default function Step2Settings({ data, setData, errors }) {
           name="attempts"
           value={data.attempts}
           onChange={handleChange}
-          className={`w-full border px-4 py-2 rounded ${
-            errors.attempts ? "border-red-500" : ""
-          }`}
+          className="w-full border px-4 py-2 rounded "
+          
         >
           <option value="">Select</option>
           <option value="1">1 Attempt</option>

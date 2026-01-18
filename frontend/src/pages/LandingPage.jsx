@@ -21,7 +21,7 @@ export default function LandingPage() {
           <img
             src={bg}
             alt="background"
-            className="w-full h-full object-cover object-top translate-y-[-100px]"
+            className="w-full h-full object-cover object-top -translate-y-25"
           />
         </div>
 
@@ -64,7 +64,7 @@ export default function LandingPage() {
             <img
               src={heroImg}
               alt="Hero"
-              className="max-h-[500px] w-auto object-contain"
+              className="max-h-125 w-auto object-contain"
             />
           </div>
 

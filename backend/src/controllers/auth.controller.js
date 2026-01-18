@@ -16,8 +16,8 @@ export const sendVerificationEmail = async (req, res) => {
     if (teacher.emailVerified) {
       return res.status(400).json({ message: "Email already verified" });
     }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+// Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = "123456"; // For testing purposes, use a fixed OTP. Replace with above line in production.
 
     teacher.emailOTP = otp;
     teacher.otpExpiry = Date.now() + 10 * 60 * 1000;
@@ -25,7 +25,7 @@ export const sendVerificationEmail = async (req, res) => {
 
     await sendOTPEmail(email, otp);
 
-    res.json({ message: "OTP sent successfully" });
+    res.json({ message: "OTP sent successfully" }, { otp });
   } catch (err) {
     res.status(500).json({ message: "OTP sending failed" });
   }

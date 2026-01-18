@@ -5,6 +5,7 @@ import bg from "../assets/teacher-loginbg.png";
 import googleLogo from "../assets/google.svg";
 import microsoftLogo from "../assets/microsoft.svg";
 
+import axios from "axios";
 const THEME = "#2a384a";
 
 export default function TeacherSignIn() {
@@ -14,7 +15,8 @@ export default function TeacherSignIn() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+const [examKey, setExamKey] = useState("");
+  
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
@@ -56,6 +58,49 @@ export default function TeacherSignIn() {
       setLoading(false);
     }
   };
+  const handleExamKeySubmit = async () => {
+    if (!examKey.trim()) {
+      alert("Please enter exam key");
+      return;
+    }
+  
+    if (examKey.length < 5) {
+      alert("Invalid exam key");
+      return;
+    }
+  
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/exam/verify/${examKey}`
+      );
+  
+      if (res.data.success) {
+        navigate(`/student/details/${examKey}`);
+      }
+  
+    } catch (error) {
+      if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data.message;
+  
+        // ❌ Exam not found
+        if (status === 404) {
+          alert("Invalid exam key. Please check and try again.");
+        }
+        // ❌ Exam exists but not published
+        else if (status === 403) {
+          alert("Exam is not published yet. Please wait for the exam to start.");
+        }
+        // ❌ Other server-side errors
+        else {
+          alert(message || "Something went wrong. Please try again.");
+        }
+      } else {
+        // ❌ Network / server error
+        alert("Server error. Please try again later.");
+      }
+    }
+  };
 
   return (
     <div className="relative min-h-screen">
@@ -79,18 +124,21 @@ export default function TeacherSignIn() {
             </Link>
 
             <div className="flex items-center bg-white rounded-3xl px-1">
-              <input
-                type="text"
-                placeholder="Student Exam Key"
-                className="px-4 py-2 text-black outline-none w-48 font-bold bg-transparent"
-              />
-              <button
-                className="px-4 py-2 text-white font-bold rounded-3xl m-0.5"
-                style={{ backgroundColor: THEME }}
-              >
-                →
-              </button>
-            </div>
+        <input
+          placeholder="Student Exam Key"
+          value={examKey}
+          onChange={(e) => setExamKey(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleExamKeySubmit()}
+          className="px-4 py-2 text-black outline-none w-48 font-bold bg-transparent"
+        />
+        <button
+          onClick={handleExamKeySubmit}
+          className="px-4 py-2 text-white font-bold rounded-3xl"
+          style={{ backgroundColor: "#2a384a" }}
+        >
+          →
+        </button>
+      </div>
 
             <Link
               to="/teacher-registration"
@@ -185,7 +233,7 @@ export default function TeacherSignIn() {
               </p>
 
               <Link
-                to="/signup"
+                to="/teacher-registration"
                 className="block mt-4 border py-2 rounded font-semibold"
                 style={{ borderColor: THEME, color: THEME }}
               >

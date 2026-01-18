@@ -3,11 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo3.png";
 import bg from "../assets/teacher-loginbg.png";
 import { CheckCircle } from "lucide-react";
+import { Menu, X } from "lucide-react";
+
+import axios from "axios";
 const THEME = "#2a384a";
 
 export default function TeacherSignUp() {
   const navigate = useNavigate();
-
+const [examKey, setExamKey] = useState("");
+  
   const [step, setStep] = useState(1);
   const [emailVerifiedUI, setEmailVerifiedUI] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
@@ -15,6 +19,7 @@ export default function TeacherSignUp() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
+const [menuOpen, setMenuOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     userType: "teacher",
@@ -108,7 +113,7 @@ export default function TeacherSignUp() {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
-
+      alert(`OTP Feature is currently disabled. Please use code 123456 to verify email.`);
       setEmailVerifiedUI(true);
     } catch (err) {
       setApiError(err.message);
@@ -141,7 +146,7 @@ export default function TeacherSignUp() {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
-
+  
       setEmailVerified(true);
     } catch (err) {
       setApiError(err.message);
@@ -185,13 +190,57 @@ export default function TeacherSignUp() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("teacher", JSON.stringify(data.teacher));
 
-      navigate("/teacher/exams");
+      navigate("/teacher-login");
     } catch (err) {
       setApiError(err.message);
     } finally {
       setLoading(false);
     }
   };
+const handleExamKeySubmit = async () => {
+  if (!examKey.trim()) {
+    alert("Please enter exam key");
+    return;
+  }
+
+  if (examKey.length < 5) {
+    alert("Invalid exam key");
+    return;
+  }
+
+  try {
+    const res = await axios.get(
+      `http://localhost:5000/api/exam/verify/${examKey}`
+    );
+
+    if (res.data.success) {
+      navigate(`/student/details/${examKey}`);
+    }
+
+  } catch (error) {
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data.message;
+
+      // ❌ Exam not found
+      if (status === 404) {
+        alert("Invalid exam key. Please check and try again.");
+      }
+      // ❌ Exam exists but not published
+      else if (status === 403) {
+        alert("Exam is not published yet. Please wait for the exam to start.");
+      }
+      // ❌ Other server-side errors
+      else {
+        alert(message || "Something went wrong. Please try again.");
+      }
+    } else {
+      // ❌ Network / server error
+      alert("Server error. Please try again later.");
+    }
+  }
+};
+
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       {/* Background */}
@@ -202,36 +251,85 @@ export default function TeacherSignUp() {
       />
 
       <div className="relative z-10 min-h-screen">
-        {/* Navbar */}
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between text-white">
-          <Link to="/">
-            <img src={logo} alt="EduExam" className="h-30" />
-          </Link>
+       {/* Navbar */}
+<div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between text-white">
+  <Link to="/">
+    <img src={logo} alt="EduExam" className="h-10 md:h-12" />
+  </Link>
 
-          <div className="hidden md:flex items-center gap-5">
-            <Link to="/" className="text-xl">Home</Link>
+  {/* Desktop Menu */}
+  <div className="hidden md:flex items-center gap-5">
+    <Link to="/" className="text-lg">Home</Link>
 
-            <div className="flex bg-white rounded-3xl px-1">
-              <input
-                placeholder="Student Exam Key"
-                className="px-4 py-2 outline-none text-black bg-transparent font-bold w-48"
-              />
-              <button
-                className="px-4 py-2 rounded-3xl text-white font-bold"
-                style={{ backgroundColor: THEME }}
-              >
-                →
-              </button>
-            </div>
+     <div className="flex items-center bg-white rounded-3xl px-1">
+        <input
+          placeholder="Student Exam Key"
+          value={examKey}
+          onChange={(e) => setExamKey(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleExamKeySubmit()}
+          className="px-4 py-2 text-black outline-none w-48 font-bold bg-transparent"
+        />
+        <button
+          onClick={handleExamKeySubmit}
+          className="px-4 py-2 text-white font-bold rounded-3xl"
+          style={{ backgroundColor: "#2a384a" }}
+        >
+          →
+        </button>
+      </div>
 
-            <Link
-              to="/teacher-login"
-              className="border px-5 py-2 rounded-3xl font-bold hover:bg-white hover:text-black"
-            >
-              Teacher Sign In
-            </Link>
-          </div>
-        </div>
+    <Link
+      to="/teacher-login"
+      className="border px-5 py-2 rounded-3xl font-bold hover:bg-white hover:text-black"
+    >
+      Teacher Sign In
+    </Link>
+  </div>
+
+  {/* Mobile Menu Button */}
+  <button
+    className="md:hidden"
+    onClick={() => setMenuOpen(!menuOpen)}
+  >
+    {menuOpen ? <X size={28} /> : <Menu size={28} />}
+  </button>
+</div>
+
+{/* Mobile Menu */}
+{menuOpen && (
+  <div className="md:hidden bg-white text-black mx-4 rounded-xl p-4 space-y-4 shadow-lg">
+    <Link onClick={() => setMenuOpen(false)} to="/" className="block font-semibold">
+      Home
+    </Link>
+
+    <div className="flex border rounded-3xl overflow-hidden">
+      <input
+        placeholder="Student Exam Key"
+        className="px-4 py-2 w-full outline-none"
+       value={examKey}
+          onChange={(e) => setExamKey(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleExamKeySubmit()}
+        
+      />
+      <button
+        onClick={handleExamKeySubmit}
+        
+        className="px-4 text-white"
+        style={{ backgroundColor: THEME }}
+      >
+        →
+      </button>
+    </div>
+
+    <Link
+      onClick={() => setMenuOpen(false)}
+      to="/teacher-login"
+      className="block text-center border px-4 py-2 rounded-3xl font-semibold"
+    >
+      Teacher Sign In
+    </Link>
+  </div>
+)}
 
         {/* FORM */}
         <div className="flex justify-center mt-10 px-4">
@@ -245,27 +343,26 @@ export default function TeacherSignUp() {
               Register an account or sign up for a free trial
             </p>
 
-            {/* Steps */}
-            <div className="flex items-center justify-between text-sm font-semibold mb-8">
-              {["Organization", "Email", "Teacher", "Details"].map((label, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div
-                    className="w-8 h-8 flex items-center justify-center rounded-full border"
-                    style={{
-                      backgroundColor: step === i + 1 ? THEME : "transparent",
-                      color: step === i + 1 ? "#fff" : "#9ca3af",
-                      borderColor: THEME,
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-                  <span className={step === i + 1 ? "text-black" : "text-gray-400"}>
-                    {label}
-                  </span>
-                  {i < 3 && <span className="mx-2 text-gray-300">→</span>}
-                </div>
-              ))}
-            </div>
+          {/* Steps */}
+<div className="flex flex-wrap justify-center gap-4 text-sm font-semibold mb-8">
+  {["Organization", "Email", "Teacher", "Details"].map((label, i) => (
+    <div key={i} className="flex items-center gap-2">
+      <div
+        className="w-8 h-8 flex items-center justify-center rounded-full border"
+        style={{
+          backgroundColor: step === i + 1 ? THEME : "transparent",
+          color: step === i + 1 ? "#fff" : "#9ca3af",
+          borderColor: THEME,
+        }}
+      >
+        {i + 1}
+      </div>
+      <span className={step === i + 1 ? "text-black" : "text-gray-400"}>
+        {label}
+      </span>
+    </div>
+  ))}
+</div>
 
             {/* STEP 1 */}
             {step === 1 && (
@@ -484,15 +581,26 @@ export default function TeacherSignUp() {
               </div>
             )}
 
-            {/* Navigation */}
-            <div className="flex justify-between mt-8">
-              <button onClick={prevStep} disabled={step === 1} className="px-6 py-2 border rounded"> Previous </button>
-              {step < 4 && (
-                <button onClick={nextStep} className="px-6 py-2 rounded text-white" style={{ backgroundColor: THEME }}>
-                  Next
-                </button>
-              )}
-            </div>
+           {/* Navigation */}
+<div className="flex flex-col sm:flex-row justify-between gap-4 mt-8">
+  <button
+    onClick={prevStep}
+    disabled={step === 1}
+    className="px-6 py-2 border rounded w-full sm:w-auto"
+  >
+    Previous
+  </button>
+
+  {step < 4 && (
+    <button
+      onClick={nextStep}
+      className="px-6 py-2 rounded text-white w-full sm:w-auto"
+      style={{ backgroundColor: THEME }}
+    >
+      Next
+    </button>
+  )}
+</div>
 
           </div>
         </div>

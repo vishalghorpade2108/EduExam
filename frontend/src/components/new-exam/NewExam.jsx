@@ -1,20 +1,25 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import DashboardNavbar from "../teacher/Navbar.jsx";
 import Step1BasicInfo from "./steps/Step1BasicInfo";
 import Step2Settings from "./steps/Step2Settings.jsx";
 import Step3Questions from "./steps/Step3Questions.jsx";
-import Step4Review from "./steps/Step4Review.jsx"; // ✅ IMPORT
+import Step4Review from "./steps/Step4Review.jsx";
+import { useNavigate } from "react-router-dom";
+
 
 const THEME = "#2a384a";
 
 export default function NewExam() {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+ const navigate = useNavigate();
 
   const [examData, setExamData] = useState({
     examName: "",
     subject: "",
-    grade: "",
-    examType: "Practice",
+    class: "",
+    examType: "practice",
     description: "",
 
     duration: "",
@@ -27,89 +32,83 @@ export default function NewExam() {
     allowCalculator: false,
   });
 
-  const [questions, setQuestions] = useState([
-    {
-      question: "",
-      options: ["", "", "", ""],
-      correctOption: "",
-      marks: 1,
-      difficulty: "Easy",
-      type: "MCQ",
-    },
-  ]);
+  const [questions, setQuestions] = useState([]);
 
-  const [errors, setErrors] = useState({});
-  const [questionErrors, setQuestionErrors] = useState([]);
+  /* ================= API CALLS ================= */
 
-  /* ================= VALIDATIONS ================= */
-
-  const validateStep1 = () => {
-    const newErrors = {};
-    if (!examData.examName.trim()) newErrors.examName = true;
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const validateStep2 = () => {
-    const newErrors = {};
-    if (!examData.duration) newErrors.duration = true;
-    if (!examData.startTime) newErrors.startTime = true;
-    if (!examData.endTime) newErrors.endTime = true;
-    if (!examData.attempts) newErrors.attempts = true;
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const validateStep3 = () => {
-    const errs = [];
-
-    questions.forEach((q, index) => {
-      const qErr = {};
-      if (!q.question) qErr.question = true;
-      if (q.correctOption === "") qErr.correctOption = true;
-      if (q.options.some((o) => !o)) qErr.options = true;
-      errs[index] = qErr;
+  const createExam = async (status) => {
+    const res = await fetch("http://localhost:5000/api/exam/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        ...examData,
+        status,
+      }),
     });
 
-    setQuestionErrors(errs);
-    return errs.every((e) => Object.keys(e).length === 0);
+    if (!res.ok) throw new Error("Exam creation failed");
+    return res.json(); // returns exam with _id
+  };
+  const saveQuestions = async (examId) => {
+  
+    if (questions.length === 0) return;
+   
+    const res = await fetch("http://localhost:5000/api/questions/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        examId,
+        questions,
+      }),
+    });
+
+    console.log(res)
+    if (!res.ok) throw new Error("Saving questions failedd");
+    return res.json();
   };
 
-  const nextStep = () => {
-    if (step === 1 && !validateStep1()) return;
-    if (step === 2 && !validateStep2()) return;
-    if (step === 3 && !validateStep3()) return;
-    setStep((s) => s + 1);
-  };
+  /* ================= HANDLERS ================= */
 
-  const prevStep = () => setStep((s) => s - 1);
+  const handleSaveDraft = async () => {
+  try {
+    setLoading(true);
 
-  /* ================= STEP 4 HANDLERS ================= */
+    const { exam } = await createExam("DRAFT");
+    await saveQuestions(exam._id);
 
-  const handlePublish = () => {
-    const payload = {
-      ...examData,
-      questions,
-      status: "Published",
-      createdAt: new Date().toISOString(),
-    };
+    alert("📄 Draft saved successfully");
 
-    console.log("Publishing Exam:", payload);
-    alert("✅ Exam Published Successfully");
-  };
+    navigate("/teacher/exams"); // ✅ redirect
+  } catch (err) {
+    alert("❌ Failed to save draft: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleSaveDraft = () => {
-    const payload = {
-      ...examData,
-      questions,
-      status: "Draft",
-      createdAt: new Date().toISOString(),
-    };
+ const handlePublish = async () => {
+  try {
+    setLoading(true);
 
-    console.log("Saving Draft:", payload);
-    alert("📄 Exam Saved as Draft");
-  };
+    const { exam } = await createExam("PUBLISHED");
+    await saveQuestions(exam._id);
+
+    alert("✅ Exam published successfully");
+
+    navigate("/teacher/exams"); // ✅ redirect
+  } catch (err) {
+    alert("❌ Failed to publish exam");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   /* ================= UI ================= */
 
@@ -119,29 +118,29 @@ export default function NewExam() {
 
       <div className="max-w-4xl mx-auto mt-8 bg-white rounded-xl shadow p-8">
         {step === 1 && (
-          <Step1BasicInfo data={examData} setData={setExamData} errors={errors} />
+          <Step1BasicInfo data={examData} setData={setExamData} />
         )}
 
         {step === 2 && (
-          <Step2Settings data={examData} setData={setExamData} errors={errors} />
+          <Step2Settings data={examData} setData={setExamData} />
         )}
 
         {step === 3 && (
           <Step3Questions
-            examSettings={examData}
             questions={questions}
             setQuestions={setQuestions}
-            errors={questionErrors}
+            examSettings={examData}
           />
         )}
 
         {step === 4 && (
           <Step4Review
             examInfo={examData}
-            settings={examData}
             questions={questions}
+            settings={examData}
             onPublish={handlePublish}
             onSaveDraft={handleSaveDraft}
+            loading={loading}
           />
         )}
 
@@ -149,7 +148,7 @@ export default function NewExam() {
         <div className="flex justify-between mt-8">
           {step > 1 && (
             <button
-              onClick={prevStep}
+              onClick={() => setStep(step - 1)}
               className="px-6 py-2 border rounded"
             >
               Back
@@ -158,7 +157,7 @@ export default function NewExam() {
 
           {step < 4 && (
             <button
-              onClick={nextStep}
+              onClick={() => setStep(step + 1)}
               className="px-6 py-2 rounded text-white font-semibold"
               style={{ backgroundColor: THEME }}
             >

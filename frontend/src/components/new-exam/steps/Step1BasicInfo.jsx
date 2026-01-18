@@ -1,4 +1,4 @@
-export default function Step1BasicInfo({ data, setData, errors }) {
+export default function Step1BasicInfo({ data, setData }) {
   const THEME = "#2a384a";
 
   const handleChange = (e) => {
@@ -30,15 +30,9 @@ export default function Step1BasicInfo({ data, setData, errors }) {
           value={data.examName}
           onChange={handleChange}
           placeholder="e.g. Mid Term Examination"
-          className={`w-full border px-4 py-2 rounded ${
-            errors.examName ? "border-red-500" : ""
-          }`}
+          className="w-full border px-4 py-2 rounded "
         />
-        {errors.examName && (
-          <p className="text-sm text-red-500 mt-1">
-            Exam name is required
-          </p>
-        )}
+        
       </div>
 
       {/* Subject */}
@@ -62,18 +56,19 @@ export default function Step1BasicInfo({ data, setData, errors }) {
           Class / Grade <span className="text-red-500">*</span>
         </label>
         <select
-          name="grade"
-          value={data.grade}
+          name="class"
+          value={data.class}
           onChange={handleChange}
           className="w-full border px-4 py-2 rounded"
         >
           <option value="">Select class</option>
-          <option>Class 6</option>
-          <option>Class 7</option>
-          <option>Class 8</option>
-          <option>Class 9</option>
-          <option>Class 10</option>
-          <option>Higher Education</option>
+          <option>MCA I</option>
+          <option>MCA II</option>
+          <option>MBA I</option>
+          <option>MBA II</option>
+          <option>BVOC I</option>
+          <option>BVOC II</option>
+          <option>BVOC III</option>
         </select>
       </div>
 
@@ -105,8 +100,6 @@ export default function Step1BasicInfo({ data, setData, errors }) {
         </label>
         <textarea
           name="description"
-          value={data.description}
-          onChange={handleChange}
           placeholder="Instructions for students..."
           className="w-full border px-4 py-2 rounded resize-none"
           rows={4}

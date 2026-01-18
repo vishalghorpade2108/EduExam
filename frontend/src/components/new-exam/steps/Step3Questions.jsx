@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+
 import {
   Plus,
   Trash2,
@@ -11,6 +13,8 @@ const THEME = "#2a384a";
 export default function Step3Questions({ questions, setQuestions,examSettings }) {
   const [showAI, setShowAI] = useState(false);
   const [aiTopic, setAiTopic] = useState("");
+  const [aiDifficulty, setAiDifficulty] = useState("Medium");
+
   const [aiCount, setAiCount] = useState(5);
   const [loadingAI, setLoadingAI] = useState(false);
 
@@ -66,25 +70,50 @@ const marksMismatch =
 
   /* 🔮 Dummy AI generation */
   const generateWithAI = async () => {
-    if (!aiTopic || aiCount < 1) return;
+  if (!aiTopic || aiCount < 1) return;
 
+  try {
     setLoadingAI(true);
 
-    setTimeout(() => {
-      const aiQuestions = Array.from({ length: aiCount }).map((_, i) => ({
-        question: `AI Generated (${aiTopic}) Question ${i + 1}?`,
-        options: ["Option A", "Option B", "Option C", "Option D"],
-        correctOption: "0",
-        marks: 1,
-        difficulty: "Medium",
-      }));
+    const res = await axios.post(
+      "http://localhost:5000/api/ai/generate-questions",
+      {
+        topic: aiTopic,
+        count: Number(aiCount),
+        difficulty: aiDifficulty,
+      }
+    );
 
-      setQuestions((prev) => [...prev, ...aiQuestions]);
-      setLoadingAI(false);
-      setShowAI(false);
-      setAiTopic("");
-    }, 1500);
-  };
+    const aiData = res.data.data;
+
+    let parsed;
+    try {
+      parsed = JSON.parse(aiData);
+    // eslint-disable-next-line no-unused-vars
+    } catch (err) {
+      alert("AI returned invalid JSON");
+      return;
+    }
+
+    const formatted = parsed.map((q) => ({
+      question: q.question,
+      options: q.options,
+      correctOption: String(q.correctAnswer), // 🔑 important
+      marks: q.marks || 1,
+      difficulty: q.difficulty || aiDifficulty,
+    }));
+
+    setQuestions((prev) => [...prev, ...formatted]);
+    setShowAI(false);
+    setAiTopic("");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to generate questions");
+  } finally {
+    setLoadingAI(false);
+  }
+};
+
 
 
 
@@ -175,15 +204,16 @@ const marksMismatch =
               placeholder="Questions count"
             />
 
-            <select
-              className="border px-3 py-2 rounded"
-              onChange={(e) => setAiTopic(aiTopic)}
-            >
-              <option>Mixed Difficulty</option>
-              <option>Easy</option>
-              <option>Medium</option>
-              <option>Hard</option>
-            </select>
+           <select
+  className="border px-3 py-2 rounded"
+  value={aiDifficulty}
+  onChange={(e) => setAiDifficulty(e.target.value)}
+>
+  <option value="Easy">Easy</option>
+  <option value="Medium">Medium</option>
+  <option value="Hard">Hard</option>
+</select>
+
           </div>
 
           <button
