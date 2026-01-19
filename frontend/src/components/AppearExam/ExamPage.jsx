@@ -11,8 +11,8 @@ export default function ExamPage() {
 
   const examSubmittedRef = useRef(false);
   const studentId = localStorage.getItem("studentId");
-   const [examInfo, setExamInfo] = useState(null);
 
+  const [examInfo, setExamInfo] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [currentQ, setCurrentQ] = useState(0);
@@ -20,58 +20,9 @@ export default function ExamPage() {
   const [warnings, setWarnings] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [loading, setLoading] = useState(true);
- const [, setSaving] = useState(false);
-const [answeredCount, setAnsweredCount] = useState(0);
+  const [answeredCount, setAnsweredCount] = useState(0);
 
-  useEffect(() => {
-  const blockKeys = (e) => {
-    if (examSubmittedRef.current) return;
-
-    // Allowed keys (ONLY these will work)
-    const allowedKeys = [
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight",
-      "Enter",
-      "Tab",
-    ];
-
-    // Allow radio navigation keys
-    if (allowedKeys.includes(e.key)) return;
-
-    // Block ALL ctrl / alt / shift shortcuts
-    if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) {
-      issueWarning("Keyboard shortcut blocked");
-      e.preventDefault();
-      return;
-    }
-
-    // Block function keys
-    if (e.key.startsWith("F")) {
-      issueWarning("Function key blocked");
-      e.preventDefault();
-      return;
-    }
-
-    // Block Escape explicitly
-    if (e.key === "Escape") {
-      issueWarning("ESC key pressed");
-      e.preventDefault();
-      return;
-    }
-
-    // Block everything else (typing)
-    e.preventDefault();
-  };
-
-  document.addEventListener("keydown", blockKeys, true);
-
-  return () => {
-    document.removeEventListener("keydown", blockKeys, true);
-  };
-}, []);
-
+  const [forceFS, setForceFS] = useState(false); // 🔒 fullscreen lock
 
   /* ================= SESSION CHECK ================= */
   useEffect(() => {
@@ -81,137 +32,71 @@ const [answeredCount, setAnsweredCount] = useState(0);
     }
   }, [studentId, examKey, navigate]);
 
-  /* ================= FETCH EXAM + QUESTIONS ================= */
+  /* ================= FETCH EXAM ================= */
   useEffect(() => {
-    const fetchExamData = async () => {
+    const fetchData = async () => {
       try {
         const examRes = await axios.get(
           `https://eduexam-5c0p.onrender.com/api/exam/key/${examKey}`
         );
-
-        const questionRes = await axios.get(
+        const qRes = await axios.get(
           `https://eduexam-5c0p.onrender.com/api/exam/${examKey}/questions`
         );
-        console.log(examRes.data);
-         setExamInfo(examRes.data);
+
+        setExamInfo(examRes.data);
         setTimeLeft(examRes.data.duration * 60);
-        setQuestions(questionRes.data.questions);
+        setQuestions(qRes.data.questions);
         setLoading(false);
-
-        // restore saved answers
-try {
-  const savedRes = await axios.get(
-    `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/saved-answers/${studentId}`
-  );
-
-  if (savedRes.data?.answers) {
-    setAnswers(savedRes.data.answers);
-  }
-
-} catch (err) {
-  console.warn("No saved answers found");
-}
-
-       } catch (err) {
-        alert("Unable to load exam");
+      } catch {
+        alert("Failed to load exam");
         navigate(-1);
       }
-    };  
-
-    fetchExamData();
-  }, [examKey, navigate, studentId]);
-
-  /* ================= FORCE FULLSCREEN ================= */
-  useEffect(() => {
-    const forceFullscreen = async () => {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      }
     };
-    forceFullscreen();
+
+    fetchData();
+  }, [examKey, navigate]);
+
+  /* ================= INITIAL FULLSCREEN ================= */
+  useEffect(() => {
+    document.documentElement.requestFullscreen().catch(() => {
+      setForceFS(true);
+    });
   }, []);
 
-  /* ================= FORCE FULLSCREEN ALWAYS ================= */
-useEffect(() => {
-  const enforceFullscreen = async () => {
-    if (examSubmittedRef.current) return;
-
-    if (!document.fullscreenElement) {
-      issueWarning("Exited fullscreen");
-
-      // Retry fullscreen until success
-      const retry = async () => {
-        try {
-          await document.documentElement.requestFullscreen();
-        } catch (err) {
-          // Retry again after small delay
-          setTimeout(retry, 500);
-        }
-      };
-
-      retry();
-    }
-  };
-
-  document.addEventListener("fullscreenchange", enforceFullscreen);
-  window.addEventListener("blur", enforceFullscreen);
-
-  return () => {
-    document.removeEventListener("fullscreenchange", enforceFullscreen);
-    window.removeEventListener("blur", enforceFullscreen);
-  };
-}, []);
-  /* ================= ESC KEY DETECTION ================= */
+  /* ================= FULLSCREEN EXIT DETECTION ================= */
   useEffect(() => {
-    const detectEsc = (e) => {
-      if (e.key === "Escape" && !examSubmittedRef.current) {
-        issueWarning("ESC key pressed");
+    const onFSChange = () => {
+      if (!document.fullscreenElement && !examSubmittedRef.current) {
+        issueWarning("Exited fullscreen");
+        setForceFS(true);
       }
     };
 
-    document.addEventListener("keydown", detectEsc);
-    return () => document.removeEventListener("keydown", detectEsc);
-  }, []);
-
-  /* ================= TAB SWITCH DETECTION ================= */
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (document.hidden && !examSubmittedRef.current) {
-        issueWarning("Tab switching detected");
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibility);
+    document.addEventListener("fullscreenchange", onFSChange);
     return () =>
-      document.removeEventListener("visibilitychange", handleVisibility);
+      document.removeEventListener("fullscreenchange", onFSChange);
   }, []);
 
-  /* ================= DISABLE COPY / PASTE ================= */
+  /* ================= TAB SWITCH ================= */
   useEffect(() => {
-    const disable = (e) => e.preventDefault();
-
-    document.addEventListener("contextmenu", disable);
-    document.addEventListener("copy", disable);
-    document.addEventListener("paste", disable);
-    document.addEventListener("cut", disable);
-
-    return () => {
-      document.removeEventListener("contextmenu", disable);
-      document.removeEventListener("copy", disable);
-      document.removeEventListener("paste", disable);
-      document.removeEventListener("cut", disable);
+    const onVisibility = () => {
+      if (document.hidden && !examSubmittedRef.current) {
+        issueWarning("Tab switch detected");
+      }
     };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
   /* ================= TIMER ================= */
   useEffect(() => {
     if (loading) return;
 
-    const timer = setInterval(() => {
+    const t = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(timer);
-           
+          clearInterval(t);
           handleSubmitExam("Time up");
           return 0;
         }
@@ -219,26 +104,22 @@ useEffect(() => {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => clearInterval(t);
   }, [loading]);
 
   /* ================= WARNINGS ================= */
   const issueWarning = (reason) => {
     alert(`⚠ Warning: ${reason}`);
-    setWarnings((prev) => prev + 1);
+    setWarnings((w) => w + 1);
   };
 
   useEffect(() => {
     if (warnings >= MAX_WARNINGS) {
       handleSubmitExam("Multiple violations");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [warnings]);
 
- 
-
-  /* ================= SUBMIT EXAM ================= */
+  /* ================= SUBMIT ================= */
   const handleSubmitExam = async (reason) => {
     if (examSubmittedRef.current) return;
     examSubmittedRef.current = true;
@@ -246,91 +127,59 @@ useEffect(() => {
     try {
       await axios.post(
         `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/submit`,
-        {
-          studentId,
-          answers,
-          warnings,
-          reason,
-        }
+        { studentId, answers, warnings, reason }
       );
-    } catch (err) {
-      console.error(err);
-    }
+    } catch {}
 
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    }
-
+    document.exitFullscreen?.();
     localStorage.removeItem("studentId");
     navigate("/student/exam-submitted");
   };
 
-  const handleSelect = async (qid, index) => {
-  // Update UI instantly
-  setAnswers((prev) => {
-    const updated = { ...prev, [qid]: index };
-    setAnsweredCount(Object.keys(updated).length);
-    return updated;
-  });
-
-  // Auto-save to backend
-  try {
-    setSaving(true);
-    await axios.post(
-      `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/save-answer`,
-      {
-        studentId,
-        questionId: qid,
-        selectedOption: index,
-      }
-    );
-  } catch (err) {
-    console.error("Auto-save failed");
-  } finally {
-    setSaving(false);
-  }
-};
-useEffect(() => {
-  const interval = setInterval(async () => {
-    if (examSubmittedRef.current) return;
-    if (Object.keys(answers).length === 0) return;
-
-    try {
-      await axios.post(
-        `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/autosave`,
-        {
-          studentId,
-          answers,
-        }
-      );
-    } catch (err) {
-      console.warn("Periodic autosave failed");
-    }
-  }, 10000);
-
-  return () => clearInterval(interval);
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [answers]);
-
-
-  /* ================= UTIL ================= */
-  const formatTime = (sec) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  /* ================= ANSWER ================= */
+  const handleSelect = (qid, idx) => {
+    setAnswers((prev) => {
+      const updated = { ...prev, [qid]: idx };
+      setAnsweredCount(Object.keys(updated).length);
+      return updated;
+    });
   };
 
-  if (loading) {
-    return <p className="text-center mt-10">Loading exam...</p>;
-  }
+  /* ================= FULLSCREEN BUTTON ================= */
+  const reEnterFullscreen = async () => {
+    try {
+      await document.documentElement.requestFullscreen();
+      setForceFS(false);
+    } catch {
+      alert("Fullscreen permission required to continue exam.");
+    }
+  };
+
+  /* ================= UTIL ================= */
+  const formatTime = (s) =>
+    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   const q = questions[currentQ];
-
   return (
 
     
     <div className="min-h-screen bg-gray-100 p-6">
-
+  {forceFS && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex flex-col items-center justify-center text-white">
+          <h2 className="text-2xl font-bold mb-4">⚠ Fullscreen Required</h2>
+          <p className="mb-6 text-center">
+            You exited fullscreen.<br />Click below to continue exam.
+          </p>
+          <button
+            onClick={reEnterFullscreen}
+            className="px-6 py-3 bg-red-600 rounded text-lg"
+          >
+            Resume Exam
+          </button>
+        </div>
+      )}
 {/* EXAM INFORMATION */}
 {examInfo && (
   <div className="bg-white rounded shadow p-4 mb-4">
