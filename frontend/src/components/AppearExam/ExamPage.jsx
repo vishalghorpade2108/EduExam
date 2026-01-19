@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const MAX_WARNINGS = 30;
+const MAX_WARNINGS = 3;
 
 export default function ExamPage() {
   const { examKey } = useParams();
@@ -131,27 +131,36 @@ try {
     forceFullscreen();
   }, []);
 
-  /* ================= FULLSCREEN EXIT DETECTION ================= */
-  useEffect(() => {
-  const handleFullscreenChange = async () => {
-    // If exam not submitted and fullscreen exited
-    if (!document.fullscreenElement && !examSubmittedRef.current) {
+  /* ================= FORCE FULLSCREEN ALWAYS ================= */
+useEffect(() => {
+  const enforceFullscreen = async () => {
+    if (examSubmittedRef.current) return;
+
+    if (!document.fullscreenElement) {
       issueWarning("Exited fullscreen");
 
-      // Re-enter fullscreen immediately
-      try {
-        await document.documentElement.requestFullscreen();
-      } catch (err) {
-        console.warn("Fullscreen re-entry blocked by browser");
-      }
+      // Retry fullscreen until success
+      const retry = async () => {
+        try {
+          await document.documentElement.requestFullscreen();
+        } catch (err) {
+          // Retry again after small delay
+          setTimeout(retry, 500);
+        }
+      };
+
+      retry();
     }
   };
 
-  document.addEventListener("fullscreenchange", handleFullscreenChange);
-  return () =>
-    document.removeEventListener("fullscreenchange", handleFullscreenChange);
-}, []);
+  document.addEventListener("fullscreenchange", enforceFullscreen);
+  window.addEventListener("blur", enforceFullscreen);
 
+  return () => {
+    document.removeEventListener("fullscreenchange", enforceFullscreen);
+    window.removeEventListener("blur", enforceFullscreen);
+  };
+}, []);
   /* ================= ESC KEY DETECTION ================= */
   useEffect(() => {
     const detectEsc = (e) => {
