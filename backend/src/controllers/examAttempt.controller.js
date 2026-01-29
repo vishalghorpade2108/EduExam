@@ -125,7 +125,7 @@ export const submitExam = async (req, res) => {
     });
 
     /* ================= 5. UPDATE STUDENT ================= */
-    await Student.findByIdAndUpdate(studentId, {
+    await Student.findByIdAndUpdate({_id: studentId} , {
       $set: {
         status: "SUBMITTED",
         submittedAt: new Date(),
