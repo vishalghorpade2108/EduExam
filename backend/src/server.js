@@ -17,7 +17,8 @@ const app = express();
 app.use(cors({
     origin: [
        "http://localhost:5173",
-      "https://edu-exam-one.vercel.app/"
+      "https://edu-exam-one.vercel.app",
+        "https://eduexam-5c0p.onrender.com"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
