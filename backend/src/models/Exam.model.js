@@ -60,7 +60,7 @@ isPublished: {
 
     status: {
       type: String,
-      default: "draft",
+      default: "DRAFT",
     },
 
 

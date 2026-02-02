@@ -10,7 +10,7 @@ import aiRoutes from "./routes/ai.routes.js"
 import teacherRoutes from "./routes/teacher.routes.js"
 import examAttemptRoutes from "./routes/examAttempt.routes.js";
 
-dotenv.config(); // ✅ MUST be before connectDB()
+dotenv.config(); 
 
 const app = express();
 
@@ -34,7 +34,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/examAttempt", examAttemptRoutes);
 const PORT = process.env.PORT || 5000;
 app.get("/", (req, res) => {
-  res.send("EduExam Backend is running 🚀");
+  res.send("EduExam Backend is running ");
 });
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

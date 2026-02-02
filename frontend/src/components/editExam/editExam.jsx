@@ -19,7 +19,7 @@ const navigate = useNavigate();
   const saveQuestions = async () => {
       console.log("Saving questions draft...", questions);
   return axios.post(
-    "https://eduexam-5c0p.onrender.com/api/questions/savedraft",
+    `${import.meta.env.VITE_API_URL}/api/questions/savedraft`,
     {
       examId: exam._id,
       questions: questions,
@@ -39,7 +39,7 @@ const navigate = useNavigate();
     console.log("Questions saved:", result.data);
     // 2️⃣ Publish exam (update status)
     const res = await axios.put(
-      `https://eduexam-5c0p.onrender.com/api/exam/${exam._id}/publish`,
+      `${import.meta.env.VITE_API_URL}/api/exam/${exam._id}/publish`,
       {},
       {
         headers: {
@@ -64,7 +64,7 @@ const navigate = useNavigate();
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          `https://eduexam-5c0p.onrender.com/api/exam/${examId}/edit`,
+          `${import.meta.env.VITE_API_URL}/api/exam/${examId}/edit`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

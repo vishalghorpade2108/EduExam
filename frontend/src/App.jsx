@@ -13,6 +13,7 @@ import StudentDetails from "./components/AppearExam/StudentDetails.jsx";
 import ExamInstructions from "./components/AppearExam/ExamInstructions.jsx";
 import ExamPage from "./components/AppearExam/ExamPage.jsx";
 import ExamSubmitted from "./components/AppearExam/ExamSubmitted.jsx";
+import TeacherExamView from "./components/teacher/TeacherExamView.jsx";
 function App() {
   return (
     <BrowserRouter>
@@ -26,6 +27,10 @@ function App() {
          <Route
           path="/teacher/exam/:examId/edit"
           element={<EditQuestionsOnly />}
+        />
+        <Route
+          path="/teacher/exam/:examId/view"
+          element={<TeacherExamView />}
         />
         <Route path="/teacher/profile" element={<Profile />} />
         <Route path="/dashboard/help" element={<HelpTraining />} />

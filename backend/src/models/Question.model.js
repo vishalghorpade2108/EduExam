@@ -37,7 +37,7 @@ const questionSchema = new mongoose.Schema(
 
     difficulty: {
       type: String,
-      enum: ["Easy", "Medium", "Hard"],
+      enum: ["Easy", "Medium", "Hard", "Mixed"],
       default: "Easy",
     },
   },

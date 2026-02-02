@@ -20,7 +20,7 @@ const handleExamKeySubmit = async () => {
 
   try {
     const res = await axios.get(
-      `https://eduexam-5c0p.onrender.com/api/exam/verify/${examKey}`
+      `${import.meta.env.VITE_API_URL}/api/exam/verify/${examKey}`
     );
 
     if (res.data.success) {
@@ -39,6 +39,9 @@ const handleExamKeySubmit = async () => {
       // ❌ Exam exists but not published
       else if (status === 403) {
         alert("Exam is not published yet. Please wait for the exam to start.");
+      }
+       else if (status === 405) {
+        alert("Exam is Ended. You can no longer take this exam.");
       }
       // ❌ Other server-side errors
       else {

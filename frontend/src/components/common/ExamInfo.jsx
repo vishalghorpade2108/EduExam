@@ -4,13 +4,12 @@ export default function ExamInfo() {
 
       {/* Heading */}
       <h2 className="text-5xl  text-[#2a384a] text-center">
-        Everything you need to create and conduct secure comprehensive exams
+        A complete solution for creating and managing secure exams.
       </h2>
 
       {/* Subtext */}
       <p className="mt-6 text-center text-gray-500 max-w-3xl mx-auto text-2xl">
-        We simplify all the moving pieces so you can administer your exams securely
-        and with confidence without technical complexity.
+        We simplify the process so you can focus on assessment, not technology.
       </p>
 
       {/* Features */}

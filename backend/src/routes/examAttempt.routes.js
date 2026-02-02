@@ -11,6 +11,5 @@ const router = express.Router();
 router.post("/:examKey/save-answer", saveAnswer);
 router.post("/:examKey/autosave", autosaveAnswers);
 router.get("/:examKey/saved-answers/:studentId", getSavedAnswers);
-router.post("/:examKey/submit", submitExam);
-console.log("ExamAttempt routes loaded");
+router.post("/submit/:examKey", submitExam);
 export default router;

@@ -16,7 +16,7 @@ export const getTeacherExams = async (req, res) => {
 
     const exams = await Exam.find({
       teacherId,
-      status: "PUBLISHED",
+      status: { $in: ["PUBLISHED", "ENDED"] },
     }).sort({ createdAt: -1 });
 
     return res.status(200).json(exams);

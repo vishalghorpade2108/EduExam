@@ -76,7 +76,7 @@ const marksMismatch =
     setLoadingAI(true);
 
     const res = await axios.post(
-      "https://eduexam-5c0p.onrender.com/api/ai/generate-questions",
+      `${import.meta.env.VITE_API_URL}/api/ai/generate-questions`,
       {
         topic: aiTopic,
         count: Number(aiCount),

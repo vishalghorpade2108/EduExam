@@ -37,7 +37,7 @@ export default function NewExam() {
   /* ================= API CALLS ================= */
 
   const createExam = async (status) => {
-    const res = await fetch("https://eduexam-5c0p.onrender.com/api/exam/save", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/exam/save`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export default function NewExam() {
   
     if (questions.length === 0) return;
    
-    const res = await fetch("https://eduexam-5c0p.onrender.com/api/questions/save", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/questions/save`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

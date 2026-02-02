@@ -5,7 +5,7 @@ import ExamInfo from "../components/common/ExamInfo";
 import TrustedSection from "../components/common/TrustedSection";
 import WhyChooseEduExam from "../components/common/WhyChooseEduExam";
 import Footer from "../components/common/Footer";
-
+import { Link } from "react-router-dom";
 export default function LandingPage() {
   return (
     <div className="min-h-screen">
@@ -40,23 +40,29 @@ export default function LandingPage() {
             </h2>
 
             <p className="text-2xl mb-8 text-[#2a384a]">
-              Easy to get started and intuitive to use. Exam.net equips you with
-              all the power and functionality you need to create secure exams for
-              your students, your way.
+              Simple to get started and easy to use. EduExam provides all the tools and flexibility you need to design secure exams tailored to your students.
             </p>
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-[#2a384a] hover:bg-[#525d6c]
-                px-6 py-3 rounded-3xl font-semibold text-white transition">
-                Sign Up For Your Free Trial
-              </button>
+  <Link to="/teacher-login">
+    <button
+      className="bg-[#2a384a] hover:bg-[#525d6c]
+      px-6 py-3 rounded-3xl font-semibold text-white transition"
+    >
+      Sign Up For Your Free Trial
+    </button>
+  </Link>
 
-              <button className="border border-[#2a384a] hover:bg-[#2a384a]
-                hover:text-white px-6 py-3 rounded-3xl font-semibold transition">
-                Book a Demo
-              </button>
-            </div>
+  <Link to="/teacher-login">
+    <button
+      className="border border-[#2a384a] hover:bg-[#2a384a]
+      hover:text-white px-6 py-3 rounded-3xl font-semibold transition"
+    >
+      Book a Demo
+    </button>
+  </Link>
+</div>
           </div>
 
           {/* Right Side - Image */}

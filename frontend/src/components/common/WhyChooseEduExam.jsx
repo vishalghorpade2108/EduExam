@@ -35,7 +35,7 @@ export default function WhyChooseEduExam() {
             <div className="flex gap-4">
               <CheckCircle className="text-green-500 mt-1" size={49} />
               <p className="text-3xl font-semibold">
-                86% of the teachers say EduExam is a time-saver
+                86% of teachers report that EduExam saves them valuable time.
               </p>
             </div>
 
@@ -43,18 +43,16 @@ export default function WhyChooseEduExam() {
               <Check className="text-yellow-500 mt-1" size={74} />
               <p className="text-2xl">
                 <span className="text-blue-600 underline font-semibold">
-                  Auto-marked exams
+                   Automated exam marking
                 </span>{" "}
-                allow you to save time marking so that you can focus on more
-                meaningful tasks and deliver feedback to your students promptly.
+                streamlines assessment, enabling educators to allocate more time to instruction and timely student feedback.
               </p>
             </div>
 
             <div className="flex gap-4 pl-1">
               <Check className="text-yellow-500 mt-1" size={44} />
               <p className="text-2xl">
-                No more time wasted deciphering messy handwriting for long-form
-                questions and essays.
+                Digital responses remove the challenge of interpreting handwritten long-form answers and essays.
               </p>
             </div>
 
@@ -64,8 +62,7 @@ export default function WhyChooseEduExam() {
                 <span className="text-blue-600 underline font-semibold">
                   Individual question library
                 </span>{" "}
-                — by reusing questions from previous exams, you create new
-                assessments quickly.
+               Reuse questions from past exams to build new assessments faster with your personal question library.
               </p>
             </div>
 
@@ -79,19 +76,20 @@ export default function WhyChooseEduExam() {
             <div className="flex gap-4">
               <CheckCircle className="text-green-500 mt-1" size={48} />
               <p className="text-3xl font-semibold">
-                98% of the teachers agree EduExam helps them efficiently monitor
-                students in real-time
+                98% of teachers report more efficient real-time student monitoring with EduExam.
               </p>
             </div>
 
             <div className="flex gap-4 pl-1 ">
               <Check className="text-yellow-500 mt-1" size={44} />
               <p className="text-2xl leading-relaxed">
-                Gain control with our intuitive <span className="text-blue-600 underline font-semibold">monitoring view </span>, allowing you to
-                track the progress of each student during an exam. Identify
-                students who may need assistance or are yet to begin writing.
-                Our built-in chat enables communicating with each of the students
-                without disrupting the entire class.
+                Gain control with our intuitive{" "}
+<span className="text-blue-600 underline font-semibold">monitoring view</span>,
+which lets you track each student’s progress in real time during an exam.
+Quickly identify students who need assistance or haven’t started yet.
+Our built-in chat allows you to communicate with individual students
+without disrupting the rest of the class.
+
               </p>
             </div>
 

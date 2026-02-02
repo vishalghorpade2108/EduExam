@@ -90,7 +90,7 @@ export default function ExamInstructions() {
 
       // 🔴 Mark exam as started in backend
       await axios.post(
-        `https://eduexam-5c0p.onrender.com/api/exam/${examKey}/start`,
+        `${import.meta.env.VITE_API_URL}/api/exam/${examKey}/start`,
         { studentId }
       );
 

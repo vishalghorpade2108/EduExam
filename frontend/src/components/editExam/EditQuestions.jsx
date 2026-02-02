@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2, Sparkles, Loader2 } from "lucide-react";
-
+import axios from "axios";
 const THEME = "#2a384a";
 
 export default function EditQuestions({
@@ -47,29 +47,50 @@ export default function EditQuestions({
   };
 
   /* ================= AI GENERATION ================= */
-  const generateWithAI = () => {
-    if (!aiTopic || aiCount < 1) return;
+  const generateWithAI = async() =>{
+  if (!aiTopic || aiCount < 1) return;
 
+  try {
     setLoadingAI(true);
 
-    setTimeout(() => {
-      const aiQuestions = Array.from({ length: aiCount }).map((_, i) => ({
-        question: `AI Generated (${aiTopic}) Question ${i + 1}?`,
-        options: ["Option A", "Option B", "Option C", "Option D"],
-        correctOption: "0",
-        marks: 1,
-        difficulty:
-          aiDifficulty === "Mixed"
-            ? ["Easy", "Medium", "Hard"][i % 3]
-            : aiDifficulty,
-      }));
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/ai/generate-questions`,
+      {
+        topic: aiTopic,
+        count: Number(aiCount),
+        difficulty: aiDifficulty,
+      }
+    );
 
-      setQuestions((prev) => [...prev, ...aiQuestions]);
-      setLoadingAI(false);
-      setShowAI(false);
-      setAiTopic("");
-    }, 1500);
-  };
+    const aiData = res.data.data;
+
+    let parsed;
+    try {
+      parsed = JSON.parse(aiData);
+    // eslint-disable-next-line no-unused-vars
+    } catch (err) {
+      alert("AI returned invalid JSON");
+      return;
+    }
+
+    const formatted = parsed.map((q) => ({
+      question: q.question,
+      options: q.options,
+      correctOption: String(q.correctAnswer), // 🔑 important
+      marks: q.marks || 1,
+      difficulty: q.difficulty || aiDifficulty,
+    }));
+
+    setQuestions((prev) => [...prev, ...formatted]);
+    setShowAI(false);
+    setAiTopic("");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to generate questions");
+  } finally {
+    setLoadingAI(false);
+  }
+};
 
   const totalMarks = questions.reduce(
     (sum, q) => sum + Number(q.marks || 0),
@@ -88,14 +109,15 @@ export default function EditQuestions({
           Edit Questions
         </h2>
 
-        <button
-          onClick={() => setShowAI(!showAI)}
-          className="flex items-center gap-2 px-4 py-2 rounded text-white"
-          style={{ backgroundColor: THEME }}
-        >
-          <Sparkles size={18} /> Generate with AI
-        </button>
-      </div>
+         <button
+                 onClick={() => setShowAI(!showAI)}
+                 className="flex items-center gap-2 px-4 py-2 rounded text-white"
+                 style={{ backgroundColor: THEME }}
+               >
+                 <Sparkles size={18} />
+                 Generate with AI
+               </button>
+             </div>
 
       {/* SUMMARY */}
       <div className="flex gap-6 p-4 border rounded-lg">

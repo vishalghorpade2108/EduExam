@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo3.png";
-import bg from "../assets/teacher-loginbg.png";
+import bg from "../assets/teacher-loginbg.jpg";
 import { CheckCircle } from "lucide-react";
 import { Menu, X } from "lucide-react";
 
@@ -103,7 +103,7 @@ const [menuOpen, setMenuOpen] = useState(false);
       setApiError("");
 
       const res = await fetch(
-        "https://eduexam-5c0p.onrender.com/api/auth/send-verification",
+        `${import.meta.env.VITE_API_URL}/api/auth/send-verification`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -133,7 +133,7 @@ const [menuOpen, setMenuOpen] = useState(false);
       setApiError("");
 
       const res = await fetch(
-        "https://eduexam-5c0p.onrender.com/api/auth/verify-email",
+        `${import.meta.env.VITE_API_URL}/api/auth/verify-email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -165,7 +165,7 @@ const [menuOpen, setMenuOpen] = useState(false);
       setApiError("");
 
       const res = await fetch(
-        "https://eduexam-5c0p.onrender.com/api/auth/register",
+        `${import.meta.env.VITE_API_URL}/api/auth/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -210,7 +210,7 @@ const handleExamKeySubmit = async () => {
 
   try {
     const res = await axios.get(
-      `https://eduexam-5c0p.onrender.com/api/exam/verify/${examKey}`
+      `${import.meta.env.VITE_API_URL}/api/exam/verify/${examKey}`
     );
 
     if (res.data.success) {

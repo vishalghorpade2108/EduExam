@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -37,10 +37,10 @@ export default function ExamPage() {
     const fetchData = async () => {
       try {
         const examRes = await axios.get(
-          `https://eduexam-5c0p.onrender.com/api/exam/key/${examKey}`
+          `${import.meta.env.VITE_API_URL}/api/exam/key/${examKey}`
         );
         const qRes = await axios.get(
-          `https://eduexam-5c0p.onrender.com/api/exam/${examKey}/questions`
+          `${import.meta.env.VITE_API_URL}/api/exam/questions/${examKey}`
         );
 
         setExamInfo(examRes.data);
@@ -67,6 +67,7 @@ export default function ExamPage() {
   useEffect(() => {
     const onFSChange = () => {
       if (!document.fullscreenElement && !examSubmittedRef.current) {
+       
         issueWarning("Exited fullscreen");
         setForceFS(true);
       }
@@ -105,6 +106,7 @@ export default function ExamPage() {
     }, 1000);
 
     return () => clearInterval(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   /* ================= WARNINGS ================= */
@@ -117,6 +119,7 @@ export default function ExamPage() {
     if (warnings >= MAX_WARNINGS) {
       handleSubmitExam("Multiple violations");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [warnings]);
 
   /* ================= SUBMIT ================= */
@@ -125,11 +128,13 @@ export default function ExamPage() {
     examSubmittedRef.current = true;
 
     try {
-      await axios.post(
-        `https://eduexam-5c0p.onrender.com/api/examAttempt/${examKey}/submit`,
+       await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/examAttempt/submit/${examKey}`,
         { studentId, answers, warnings, reason }
       );
-    } catch {}
+    } catch (error) {
+      console.error("Error submitting exam:", error);
+    }
 
     document.exitFullscreen?.();
     localStorage.removeItem("studentId");

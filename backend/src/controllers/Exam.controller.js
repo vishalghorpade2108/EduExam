@@ -68,7 +68,7 @@ export const deleteExam = async (req, res) => {
 
 export const getExamForEdit = async (req, res) => {
  try{
-  console.log("hi")
+
   const exam = await Exam.findById(req.params.id);
  
   if (!exam){ 
@@ -83,7 +83,7 @@ export const getExamForEdit = async (req, res) => {
 
   const questions = await Question.find({ exam: exam._id });
 
-  console.log("questions =", questions);
+ 
   res.json({
     exam,
     questions,
@@ -129,7 +129,7 @@ export const getExamForEdit = async (req, res) => {
 export const verifyExamKey = async (req, res) => {
   try {
     const { examKey } = req.params;
-    console.log("Verifying exam key:", examKey);
+   
 
     const exam = await Exam.findOne({ examKey });
 
@@ -141,10 +141,16 @@ export const verifyExamKey = async (req, res) => {
     }
 
     // ✅ Check if exam is published
-    if (exam.status !== "PUBLISHED") {
+    if (exam.status === "DRAFT") {
       return res.status(403).json({
         success: false,
         message: "Exam is not published yet",
+      });
+    }else 
+    if(exam.status==="ENDED"){
+      return res.status(405).json({
+        success: false,
+        message: "Exam has ended",
       });
     }
 
@@ -203,7 +209,7 @@ export const getExamByKey = async (req, res) => {
 export const startExam = async (req, res) => {
   const { studentId } = req.body;
 
-  const student = await Student.findById(studentId);
+  const student = await Student.findById({_id:studentId});
 
   if (!student) {
     return res.status(404).json({ message: "Student not found" });
@@ -254,3 +260,46 @@ export const getQuestionsByExamKey = async (req, res) => {
     });
   }
 };
+ export const getExamDetailForTEacher=async(req,res)=>{
+   try{
+    const examId=req.params.id;
+    const exam=await Exam.findById({_id: examId});
+    if(!exam){
+      return res.status(404).json({message:"Exam not found"});
+    }
+    res.json({exam});
+   }catch(error){
+    console.error(error);
+    res.status(500).json({message:"Server error"});
+   }  
+  }
+  export const getQuestionsByExamId=async(req,res)=>{
+    try{
+      const question=await Question.find({exam:req.params.id});
+      res.json({question});
+    }
+     catch(error){
+      console.error(error);
+      res.status(500).json({message:"Server error"});
+     }
+  }
+
+  export const endExam=async(req,res)=>{
+    try {
+       const examKey=req.body.examKey;
+      const exam=await Exam.findOne({examKey:examKey});
+      if(!exam){
+        return res.status(404).json({message:"Exam not found"});
+      }
+      if(exam.status==="ENDED"){
+        return res.status(400).json({message:"Exam already ended"});
+      }
+      exam.status="ENDED";
+      await exam.save();
+      res.json({message:"Exam ended successfully"});
+   
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({message:"Server error"});
+    }
+  }

@@ -82,26 +82,26 @@ export const submitExam = async (req, res) => {
 
   try {
     /* ================= 1. FIND EXAM ================= */
-    const exam = await Exam.findOne({ examKey });
-
+    const exam = await Exam.findOne({ examKey: examKey });
+  
     if (!exam) {
       return res.status(404).json({ message: "Exam not found" });
     }
 
     /* ================= 2. UPDATE EXAM ATTEMPT ================= */
     const attempt = await ExamAttempt.findOneAndUpdate(
-      { examKey, studentId },
-      {
-        $set: {
-          answers,
-          warnings,
-          submitted: true,
-          submitReason: reason,
-          submittedAt: new Date(),
-        },
-      },
-      { new: true }
-    );
+  { examKey, studentId, submitted: false },
+  {
+    $set: {
+      answers,
+      warnings,
+      submitted: true,
+      submitReason: reason,
+      submittedAt: new Date(),
+    },
+  },
+   { upsert: true, new: true }
+);
 
     if (!attempt) {
       return res.status(404).json({ message: "Attempt not found" });
@@ -125,7 +125,7 @@ export const submitExam = async (req, res) => {
     });
 
     /* ================= 5. UPDATE STUDENT ================= */
-    await Student.findByIdAndUpdate(studentId, {
+    await Student.findByIdAndUpdate({_id: studentId}, {
       $set: {
         status: "SUBMITTED",
         submittedAt: new Date(),

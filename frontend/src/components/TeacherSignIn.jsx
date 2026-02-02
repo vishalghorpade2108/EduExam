@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logo from "../assets/logo3.png";
-import bg from "../assets/teacher-loginbg.png";
+import bg from "../assets/teacher-loginbg.jpg";
 import googleLogo from "../assets/google.svg";
 import microsoftLogo from "../assets/microsoft.svg";
 
@@ -29,7 +29,7 @@ const [examKey, setExamKey] = useState("");
     try {
       setLoading(true);
 
-      const res = await fetch("https://eduexam-5c0p.onrender.com/api/auth/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +71,7 @@ const [examKey, setExamKey] = useState("");
   
     try {
       const res = await axios.get(
-        `https://eduexam-5c0p.onrender.com/api/exam/verify/${examKey}`
+        `${import.meta.env.VITE_API_URL}/api/exam/verify/${examKey}`
       );
   
       if (res.data.success) {
