@@ -20,7 +20,7 @@ export default function Footer() {
           <div className="pt-4 text-1xl ml-4">
             <p className="font-semibold text-white">Support Site</p>
             <p className="hover:text-white cursor-pointer">
-              info@eduexam.com
+              eduexam2108@gmail.com
             </p>
           </div>
         </div>

@@ -6,7 +6,17 @@ import TrustedSection from "../components/common/TrustedSection";
 import WhyChooseEduExam from "../components/common/WhyChooseEduExam";
 import Footer from "../components/common/Footer";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 export default function LandingPage() {
+  const navigate = useNavigate();
+   useEffect(() => {
+    const token = localStorage.getItem("token"); // or "teacherToken"
+    if (token) {
+      navigate("/teacher/exams");
+    }
+  }, [navigate]);
+
   return (
     <div className="min-h-screen">
 

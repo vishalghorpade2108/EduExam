@@ -2,31 +2,14 @@ import mongoose from "mongoose";
 
 const teacherSchema = new mongoose.Schema(
   {
-    country: {
-      type: String,
-      trim: true,
-    },
-
-    organizationName: {
-      type: String,
-      trim: true,
-    },
-
-    organizationWebsite: {
-      type: String,
-      trim: true,
-    },
-
-    name: {
-      type: String,
-      trim: true,
-    },
+    name: String,
 
     email: {
       type: String,
       unique: true,
       lowercase: true,
       trim: true,
+      required: true,
     },
 
     role: {
@@ -34,22 +17,39 @@ const teacherSchema = new mongoose.Schema(
       default: "Teacher",
     },
 
-    subject: {
-      type: String,
-    },
+    subject: String,
 
     password: {
       type: String,
       minlength: 6,
     },
-    
-  emailVerified: {
-    type: Boolean,
-    default: false,
-  },
 
-  emailOTP: String,
-  otpExpiry: Date,
+    // 🔐 AUTH PROVIDERS
+    authProviders: {
+      local: { type: Boolean, default: true },
+      google: { type: Boolean, default: false },
+      microsoft: { type: Boolean, default: false },
+    },
+
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+
+    microsoftId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    emailOTP: String,
+    otpExpiry: Date,
   },
   { timestamps: true }
 );

@@ -11,6 +11,7 @@ export default function ExamPage() {
 
   const examSubmittedRef = useRef(false);
   const studentId = localStorage.getItem("studentId");
+const [examStarted, setExamStarted] = useState(false);
 
   const [examInfo, setExamInfo] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -56,27 +57,24 @@ export default function ExamPage() {
     fetchData();
   }, [examKey, navigate]);
 
-  /* ================= INITIAL FULLSCREEN ================= */
-  useEffect(() => {
-    document.documentElement.requestFullscreen().catch(() => {
-      setForceFS(true);
-    });
-  }, []);
 
   /* ================= FULLSCREEN EXIT DETECTION ================= */
   useEffect(() => {
-    const onFSChange = () => {
-      if (!document.fullscreenElement && !examSubmittedRef.current) {
-       
-        issueWarning("Exited fullscreen");
-        setForceFS(true);
-      }
-    };
+  const onFSChange = () => {
+    if (
+      examStarted &&
+      !document.fullscreenElement &&
+      !examSubmittedRef.current
+    ) {
+      issueWarning("Exited fullscreen");
+      setForceFS(true);
+    }
+  };
 
-    document.addEventListener("fullscreenchange", onFSChange);
-    return () =>
-      document.removeEventListener("fullscreenchange", onFSChange);
-  }, []);
+  document.addEventListener("fullscreenchange", onFSChange);
+  return () =>
+    document.removeEventListener("fullscreenchange", onFSChange);
+}, [examStarted]);
 
   /* ================= TAB SWITCH ================= */
   useEffect(() => {
@@ -170,7 +168,32 @@ export default function ExamPage() {
   return (
 
     
+    
     <div className="min-h-screen bg-gray-100 p-6">
+      {!examStarted && (
+  <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex flex-col items-center justify-center text-white">
+    <h2 className="text-2xl font-bold mb-4">Start Exam</h2>
+    <p className="mb-6 text-center">
+      Exam will start in fullscreen mode.<br />
+      Do not switch tabs or exit fullscreen.
+    </p>
+    <button
+      onClick={async () => {
+        try {
+          await document.documentElement.requestFullscreen();
+          setExamStarted(true);
+          setForceFS(false);
+        } catch {
+          alert("Fullscreen permission is required to start the exam.");
+        }
+      }}
+      className="px-6 py-3 bg-green-600 rounded text-lg"
+    >
+      Start Exam
+    </button>
+  </div>
+)}
+
   {forceFS && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex flex-col items-center justify-center text-white">
           <h2 className="text-2xl font-bold mb-4">⚠ Fullscreen Required</h2>

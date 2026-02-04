@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars */
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logo from "../assets/logo3.png";
 import bg from "../assets/teacher-loginbg.jpg";
 import googleLogo from "../assets/google.svg";
 import microsoftLogo from "../assets/microsoft.svg";
+import { GoogleLogin } from "@react-oauth/google";
 
 import axios from "axios";
 const THEME = "#2a384a";
@@ -198,14 +200,30 @@ const [examKey, setExamKey] = useState("");
 
             {/* OAuth */}
             <div className="mt-6 space-y-3">
-              <button
-                type="button"
-                className="w-full flex items-center justify-center gap-3 border rounded-full py-2 font-semibold hover:bg-gray-50"
-                style={{ borderColor: THEME }}
-              >
-                <img src={googleLogo} alt="Google" className="h-5 w-5" />
-                Teacher sign in with Google
-              </button>
+              <GoogleLogin
+  onSuccess={async (credentialResponse) => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/google-login`,
+        { token: credentialResponse.credential }
+      );
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("teacher", JSON.stringify(res.data.teacher));
+
+      navigate("/teacher/exams");
+    } catch (err) {
+      alert("Google login failed");
+    }
+  }}
+  onError={() => {
+    alert("Google login failed");
+  }}
+  theme="outline"
+  size="large"
+  width="100%"
+/>
+
 
               <button
                 type="button"

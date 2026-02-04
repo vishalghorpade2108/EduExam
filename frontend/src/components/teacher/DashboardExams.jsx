@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/immutability */
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardFooter from "./DashboardFooter";
@@ -23,11 +21,6 @@ import {
 
 const THEME = "#2a384a";
 
-const accessOptions = [
-  { value: "Open", label: "Open", color: "bg-green-500" },
-  { value: "Closed", label: "Closed", color: "bg-red-500" },
-  { value: "Discoverable", label: "Discoverable", color: "bg-yellow-400" },
-];
 
 export default function DashboardExams() {
   const navigate = useNavigate();
@@ -41,7 +34,7 @@ export default function DashboardExams() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedTeacher = localStorage.getItem("teacher");
-
+  
     if (!token || !storedTeacher) {
       navigate("/teacher-signin");
       return;
@@ -132,6 +125,16 @@ export default function DashboardExams() {
     return "bg-gray-100 text-gray-600";
   };
 
+  const formatDateTime = (date) =>
+  new Date(date).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <div className="grow">
@@ -181,25 +184,21 @@ export default function DashboardExams() {
             </div>
 
             <div className="bg-white overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm text-center">
                 <thead className="bg-gray-100 text-gray-600">
                   <tr>
-                    <th className="px-4 py-3 text-left">Exam name</th>
+                    <th className="px-4 py-3">Exam name</th>
                     <th className="px-4 py-3">Key</th>
                     <th className="px-4 py-3">Created</th>
                     <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Access</th>
+                    <th className="px-4 py-3">Schedule</th>
+
                     <th className="px-4 py-3"></th>
                   </tr>
                 </thead>
 
-                <tbody>
+                <tbody >
                   {exams.map((exam) => {
-                    const access =
-                      accessOptions.find(
-                        (a) => a.value === exam.access
-                      ) || accessOptions[0];
-
                     return (
                       <tr
                         key={exam._id}
@@ -227,30 +226,17 @@ export default function DashboardExams() {
                           </span>
                         </td>
 
-                        <td className="px-4 py-3">
-                          <select
-                            defaultValue={exam.access || "Open"}
-                            className="border rounded px-2 py-1 text-sm"
-                          >
-                            {accessOptions.map((o) => (
-                              <option
-                                key={o.value}
-                                value={o.value}
-                              >
-                                {o.label}
-                              </option>
-                            ))}
-                          </select>
+                       <td className="px-4 py-3 text-xs">
+  <div className="flex flex-col gap-1">
+    <span className="text-gray-700 font-medium">
+      Start: {formatDateTime(exam.startTime)}
+    </span>
+    <span className="text-gray-500">
+      End: {formatDateTime(exam.endTime)}
+    </span>
+  </div>
+</td>
 
-                          <div className="flex items-center gap-2 mt-1">
-                            <span
-                              className={`w-2 h-2 rounded-full ${access.color}`}
-                            />
-                            <span className="text-xs">
-                              {access.value}
-                            </span>
-                          </div>
-                        </td>
 
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3 relative">

@@ -10,7 +10,8 @@ import { ChevronDown, Search, Eye, Printer } from "lucide-react";
 
 export default function MonitoringResults() {
   const teacher = JSON.parse(localStorage.getItem("teacher"));
-
+const token = localStorage.getItem("token");
+console.log("Teacher info:", token);
   const [mainTab, setMainTab] = useState("monitoring");
   const [exams, setExams] = useState([]);
   const [selectedExam, setSelectedExam] = useState(null);

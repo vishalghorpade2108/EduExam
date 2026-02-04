@@ -129,7 +129,6 @@ export const getExamForEdit = async (req, res) => {
 export const verifyExamKey = async (req, res) => {
   try {
     const { examKey } = req.params;
-   
 
     const exam = await Exam.findOne({ examKey });
 
@@ -140,21 +139,41 @@ export const verifyExamKey = async (req, res) => {
       });
     }
 
-    // ✅ Check if exam is published
+    // Check exam status
     if (exam.status === "DRAFT") {
       return res.status(403).json({
         success: false,
         message: "Exam is not published yet",
       });
-    }else 
-    if(exam.status==="ENDED"){
+    }
+
+    if (exam.status === "ENDED") {
       return res.status(405).json({
         success: false,
         message: "Exam has ended",
       });
     }
 
-    // ✅ Exam key is valid & published
+    const now = new Date();
+
+    // Exam not started yet
+    if (now < exam.startTime) {
+      return res.status(403).json({
+        success: false,
+        message: "Exam has not started yet",
+        startTime: exam.startTime,
+      });
+    }
+
+    // Exam time over
+    if (now > exam.endTime) {
+      return res.status(405).json({
+        success: false,
+        message: "Exam time is over",
+      });
+    }
+
+    // Exam is valid & active
     return res.status(200).json({
       success: true,
       message: "Exam key verified",
@@ -169,6 +188,7 @@ export const verifyExamKey = async (req, res) => {
     });
   }
 };
+
 
 
 

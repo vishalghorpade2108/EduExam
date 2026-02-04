@@ -16,15 +16,19 @@ const app = express();
 
 app.use(cors({
     origin: [
-       "http://localhost:5173",
-      "https://edu-exam-one.vercel.app/"
+       "http://localhost:5173", 
+      "https://edu-exam-one.vercel.app/",
+      "https://www.eduexam.shop/",
+       "https://eduexam.shop",
+
+
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }));
 app.use(express.json());
 
-connectDB();
+connectDB(); 
 
 app.use("/api/auth", authRoutes);
 app.use("/api/exam",examRoutes)
