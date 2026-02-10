@@ -87,9 +87,17 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-600 mt-12 pt-6 text-center text-sm text-gray-400">
-        © {new Date().getFullYear()} EduExam. All rights reserved.
-      </div>
+     <div className="border-t border-gray-600 mt-12 pt-6 text-center text-sm text-gray-400 space-y-2">
+  <p>
+    © {new Date().getFullYear()} EduExam. All rights reserved.
+  </p>
+  <p className="text-gray-300">
+    Designed &amp; Developed by{" "}
+    <span className="text-white font-medium hover:text-yellow-400 cursor-pointer">
+      Vishal Ghorpade
+    </span>
+  </p>
+</div>
     </footer>
   );
 }
