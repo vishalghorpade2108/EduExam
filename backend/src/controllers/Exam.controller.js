@@ -154,7 +154,9 @@ export const verifyExamKey = async (req, res) => {
       });
     }
 
-    const now = new Date();
+    const now = new Date(
+  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+);
 
     // Exam not started yet
     if (now < exam.startTime) {
