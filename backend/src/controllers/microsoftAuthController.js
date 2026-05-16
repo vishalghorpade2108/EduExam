@@ -21,8 +21,20 @@ export const microsoftLogin = async (req, res) => {
     });
 
     const { oid, preferred_username, name } = tokenResponse.idTokenClaims;
+    const email = preferred_username;
 
-    let teacher = await Teacher.findOne({ email: preferred_username });
+    // 🏫 Teacher Email Validation: Block common public domains
+    const publicDomains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com", "live.com", "msn.com"];
+    const domain = email.split("@")[1];
+
+    if (publicDomains.includes(domain)) {
+      return res.status(403).json({ 
+        success: false,
+        message: "Only institutional or school email addresses are allowed for teachers. Please use your official school/college email." 
+      });
+    }
+
+    let teacher = await Teacher.findOne({ email });
 
     if (!teacher) {
       teacher = await Teacher.create({

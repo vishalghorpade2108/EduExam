@@ -98,6 +98,14 @@ const [menuOpen, setMenuOpen] = useState(false);
       return;
     }
 
+    // Optional: Frontend check for institutional email
+    const publicDomains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com"];
+    const domain = formData.email.split("@")[1];
+    if (publicDomains.includes(domain)) {
+      setErrors({ email: "Please use your official institutional/school email address." });
+      return;
+    }
+
     try {
       setLoading(true);
       setApiError("");
@@ -113,7 +121,7 @@ const [menuOpen, setMenuOpen] = useState(false);
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
-      alert(`OTP Feature is currently disabled. Please use code 123456 to verify email.`);
+      
       setEmailVerifiedUI(true);
     } catch (err) {
       setApiError(err.message);
@@ -457,10 +465,16 @@ const handleExamKeySubmit = async () => {
                       type="email"
                       name="email"
                       value={formData.email}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setErrors((prev) => ({ ...prev, email: "" }));
+                      }}
                       placeholder="teacher@school.edu"
-                      className="w-full border px-4 py-2 rounded"
+                      className={`w-full border px-4 py-2 rounded ${errors.email ? 'border-red-500' : ''}`}
                     />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                    )}
                     <button
                       onClick={sendVerificationEmail}
                       className="w-full mt-4 py-2 text-white rounded"
@@ -475,11 +489,15 @@ const handleExamKeySubmit = async () => {
                     <input
                       placeholder="Enter OTP"
                       value={verificationCode}
-                      onChange={(e) =>
-                        setVerificationCode(e.target.value)
-                      }
-                      className="w-full border px-4 py-2 rounded mt-4"
+                      onChange={(e) => {
+                        setVerificationCode(e.target.value);
+                        setErrors((prev) => ({ ...prev, emailVerify: "" }));
+                      }}
+                      className={`w-full border px-4 py-2 rounded mt-4 ${errors.emailVerify ? 'border-red-500' : ''}`}
                     />
+                    {errors.emailVerify && (
+                      <p className="text-red-500 text-sm mt-1">{errors.emailVerify}</p>
+                    )}
                     <button
                       onClick={verifyEmailCode}
                       className="w-full mt-4 py-2 text-white rounded"

@@ -7,6 +7,16 @@ export const sendVerificationEmail = async (req, res) => {
   const { email } = req.body;
 
   try {
+    // 🏫 Teacher Email Validation: Block common public domains to ensure only institutional emails are used
+    const publicDomains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com"];
+    const domain = email.split("@")[1];
+
+    if (publicDomains.includes(domain)) {
+      return res.status(403).json({ 
+        message: "Only institutional or school email addresses are allowed for teachers. Please use your official school/college email." 
+      });
+    }
+
     let teacher = await Teacher.findOne({ email });
 
     if (!teacher) {
@@ -14,10 +24,13 @@ export const sendVerificationEmail = async (req, res) => {
     }
 
     if (teacher.emailVerified) {
-      return res.status(400).json({ message: "Email already verified" });
+      // Allow re-verification if they haven't finished registration, but for now we'll just check if they are fully registered
+      if (teacher.password) {
+        return res.status(400).json({ message: "Email already registered and verified." });
+      }
     }
-// Math.floor(100000 + Math.random() * 900000).toString();
-    const otp = "123456"; // For testing purposes, use a fixed OTP. Replace with above line in production.
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     teacher.emailOTP = otp;
     teacher.otpExpiry = Date.now() + 10 * 60 * 1000;
@@ -25,8 +38,9 @@ export const sendVerificationEmail = async (req, res) => {
 
     await sendOTPEmail(email, otp);
 
-    res.json({ message: "OTP sent successfully" }, { otp });
+    res.json({ message: "OTP sent successfully" });
   } catch (err) {
+    console.error("OTP Error:", err);
     res.status(500).json({ message: "OTP sending failed" });
   }
 };
