@@ -16,7 +16,8 @@ const app = express();
 
 app.use(cors({
     origin: [
-       "http://localhost:5173", 
+       "http://localhost:5173",
+       "https://localhost:5173",
       "https://edu-exam-one.vercel.app",
       "https://www.eduexam.shop",
        "https://eduexam.shop",

@@ -17,8 +17,16 @@ export default function TeacherSignIn() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-const [examKey, setExamKey] = useState("");
-  
+  const [examKey, setExamKey] = useState("");
+
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState("");
+  const [forgotSuccess, setForgotSuccess] = useState("");
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
@@ -58,6 +66,54 @@ const [examKey, setExamKey] = useState("");
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail) {
+      setForgotError("Email is required");
+      return;
+    }
+    setForgotLoading(true);
+    setForgotError("");
+    setForgotSuccess("");
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/forgot-password`, { email: forgotEmail });
+      setForgotSuccess(res.data.message);
+      setForgotStep(2);
+    } catch (err) {
+      setForgotError(err.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!forgotOtp || !newPassword) {
+      setForgotError("OTP and new password are required");
+      return;
+    }
+    setForgotLoading(true);
+    setForgotError("");
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/reset-password`, { 
+        email: forgotEmail,
+        otp: forgotOtp,
+        newPassword
+      });
+      alert(res.data.message);
+      setShowForgotModal(false);
+      setForgotStep(1);
+      setForgotEmail("");
+      setForgotOtp("");
+      setNewPassword("");
+      setForgotSuccess("");
+    } catch (err) {
+      setForgotError(err.response?.data?.message || "Failed to reset password");
+    } finally {
+      setForgotLoading(false);
     }
   };
   const handleExamKeySubmit = async () => {
@@ -200,42 +256,47 @@ const [examKey, setExamKey] = useState("");
 
             {/* OAuth */}
             <div className="mt-6 space-y-3">
-              <GoogleLogin
-  onSuccess={async (credentialResponse) => {
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/google-login`,
-        { token: credentialResponse.credential }
-      );
+              <div className="w-full flex justify-center google-btn-container">
+                <GoogleLogin
+                  onSuccess={async (credentialResponse) => {
+                    try {
+                      setError("");
+                      const res = await axios.post(
+                        `${import.meta.env.VITE_API_URL}/api/auth/google-login`,
+                        { token: credentialResponse.credential }
+                      );
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("teacher", JSON.stringify(res.data.teacher));
+                      localStorage.setItem("token", res.data.token);
+                      localStorage.setItem("teacher", JSON.stringify(res.data.teacher));
 
-      navigate("/teacher/exams");
-    } catch (err) {
-      alert("Google login failed");
-    }
-  }}
-  onError={() => {
-    alert("Google login failed");
-  }}
-  theme="outline"
-  size="large"
-  width="100%"
-/>
-
+                      navigate("/teacher/exams");
+                    } catch (err) {
+                      setError(err.response?.data?.message || "Google login failed");
+                    }
+                  }}
+                  onError={() => {
+                    setError("Google login failed");
+                  }}
+                  theme="outline"
+                  size="large"
+                  shape="pill"
+                  width="384"
+                />
+              </div>
 
               <button
                 type="button"
-                className="w-full flex items-center justify-center gap-3 border rounded-full py-2 font-semibold hover:bg-gray-50"
+                onClick={() => setError("Microsoft sign-in is currently pending integration.")}
+                className="w-full flex items-center justify-center gap-3 border rounded-full py-2 font-semibold hover:bg-gray-50 cursor-pointer"
                 style={{ borderColor: THEME }}
               >
                 <img src={microsoftLogo} alt="Microsoft" className="h-5 w-5" />
-                Teacher sign in with Microsoft
+                Teacher sign in with Microsoft (Pending)
               </button>
             </div>
 
             <p
+              onClick={() => setShowForgotModal(true)}
               className="text-center text-sm mt-4 cursor-pointer hover:underline"
               style={{ color: THEME }}
             >
@@ -261,6 +322,85 @@ const [examKey, setExamKey] = useState("");
           </form>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgotModal && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-8 relative">
+            <button
+              onClick={() => {
+                setShowForgotModal(false);
+                setForgotStep(1);
+                setForgotError("");
+                setForgotSuccess("");
+              }}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            >
+              ✕
+            </button>
+            <h2 className="text-2xl font-semibold text-center mb-6" style={{ color: THEME }}>
+              {forgotStep === 1 ? "Forgot Password" : "Reset Password"}
+            </h2>
+
+            {forgotError && <p className="text-red-600 text-sm mb-3 text-center">{forgotError}</p>}
+            {forgotSuccess && <p className="text-green-600 text-sm mb-3 text-center">{forgotSuccess}</p>}
+
+            {forgotStep === 1 ? (
+              <form onSubmit={handleForgotPassword}>
+                <p className="text-sm text-gray-600 mb-4 text-center">
+                  Enter your registered email address to receive an OTP.
+                </p>
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  className="w-full border px-4 py-2 rounded mb-4 focus:ring-2"
+                  style={{ borderColor: THEME }}
+                />
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full text-white py-2 rounded-3xl font-semibold disabled:opacity-60"
+                  style={{ backgroundColor: THEME }}
+                >
+                  {forgotLoading ? "Sending OTP..." : "Send OTP"}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleResetPassword}>
+                <p className="text-sm text-gray-600 mb-4 text-center">
+                  Enter the OTP sent to {forgotEmail} and your new password.
+                </p>
+                <input
+                  type="text"
+                  placeholder="6-digit OTP"
+                  value={forgotOtp}
+                  onChange={(e) => setForgotOtp(e.target.value)}
+                  className="w-full border px-4 py-2 rounded mb-4 focus:ring-2"
+                  style={{ borderColor: THEME }}
+                />
+                <input
+                  type="password"
+                  placeholder="New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full border px-4 py-2 rounded mb-6 focus:ring-2"
+                  style={{ borderColor: THEME }}
+                />
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full text-white py-2 rounded-3xl font-semibold disabled:opacity-60"
+                  style={{ backgroundColor: THEME }}
+                >
+                  {forgotLoading ? "Resetting..." : "Reset Password"}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

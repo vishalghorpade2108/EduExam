@@ -1,7 +1,7 @@
 import Teacher from "../models/Teacher.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import {sendOTPEmail} from "../config/mailer.js";
+import {sendOTPEmail, sendForgotPasswordEmail} from "../config/mailer.js";
 
 export const sendVerificationEmail = async (req, res) => {
   const { email } = req.body;
@@ -157,3 +157,52 @@ export const loginTeacher = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+/* ================= FORGOT PASSWORD ================= */
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const teacher = await Teacher.findOne({ email });
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    teacher.emailOTP = otp;
+    teacher.otpExpiry = Date.now() + 10 * 60 * 1000;
+    await teacher.save();
+
+    await sendForgotPasswordEmail(email, otp);
+    res.json({ message: "Password reset OTP sent successfully" });
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    res.status(500).json({ message: "Failed to send reset OTP" });
+  }
+};
+
+/* ================= RESET PASSWORD ================= */
+export const resetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  try {
+    const teacher = await Teacher.findOne({ email });
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    if (teacher.emailOTP !== otp || teacher.otpExpiry < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    teacher.password = hashedPassword;
+    teacher.emailOTP = null;
+    teacher.otpExpiry = null;
+    await teacher.save();
+
+    res.json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+    res.status(500).json({ message: "Failed to reset password" });
+  }
+};
+
