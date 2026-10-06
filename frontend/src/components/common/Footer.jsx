@@ -95,6 +95,10 @@ export default function Footer() {
     Designed &amp; Developed by{" "}
     <span className="text-white font-medium hover:text-yellow-400 cursor-pointer">
       Vishal Ghorpade
+    </span>{" "}
+    &amp;{" "}
+    <span className="text-white font-medium hover:text-yellow-400 cursor-pointer">
+      Dhananjay Bhavar
     </span>
   </p>
 </div>

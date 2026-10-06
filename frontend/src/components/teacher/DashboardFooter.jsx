@@ -20,6 +20,8 @@ function DashboardFooter() {
         <div className="text-sm text-center md:text-right">
           Designed & Developed by  
           <span className="ml-1 font-semibold text-white">Vishal Ghorpade</span>
+          {" & "}
+          <span className="font-semibold text-white">Dhananjay Bhavar</span>
         </div>
       </div>
     </footer>
