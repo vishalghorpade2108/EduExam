@@ -1,3 +1,91 @@
-**EduExam** is a full-stack Online Examination and AI-Assisted Proctoring Platform built for educational institutions, teachers, and students. The platform enables teachers to create, schedule, and manage secure online exams with manual or AI-generated MCQs using **Google Gemini 2.5 Flash**, while students can attend exams through unique exam keys with live countdown timers, question navigation, automatic submission, fullscreen enforcement, tab-switch and window-blur detection, webcam checks, and anti-cheating warnings. Teachers can monitor student attempts, review scores, percentages, timestamps, proctoring logs, warnings, and disqualification status through a centralized dashboard. The application is built using **React 19, Vite, Tailwind CSS, React Router, Node.js, Express 5, MongoDB, Mongoose, JWT, bcryptjs, Google OAuth, Microsoft SSO, and email OTP authentication**, with REST APIs and secure authentication mechanisms. This project demonstrates practical experience in **full-stack development, AI integration, authentication, database design, real-time exam management, browser-based proctoring, API development, and secure web application architecture**.
+# 🎓 EduExam — Online Examination & AI-Assisted Proctoring Platform
 
-**WorkFlow**  Teacher Registration/Login → Create & Schedule Exam → Add Manual or AI-Generated Questions → Validate & Publish Exam → Generate Exam Key → Student Registration → System & Proctoring Checks → Online Exam with Timer & Anti-Cheating Monitoring → Auto/Manual Submission → Automatic Evaluation → Results & Proctoring Dashboard 
+**EduExam** is a full-stack online examination platform designed for educational institutions, teachers, and students. The platform simplifies the complete examination lifecycle — from creating and scheduling exams to conducting secure online assessments, monitoring students, evaluating submissions, and generating performance reports.
+
+## 🚀 Key Features
+
+- 📝 Online examination management
+- 🤖 AI-assisted question generation
+- 📅 Exam creation and scheduling
+- 👨‍🏫 Teacher examination dashboard
+- 👨‍🎓 Student examination dashboard
+- 🛡️ AI-assisted proctoring and anti-cheating mechanisms
+- ⏱️ Automated examination timer
+- 📊 Automated result generation
+- 📈 Student performance analytics
+- 📋 Question bank management
+- 🔐 Secure authentication and role-based access
+- 📑 Exam history and result tracking
+- 📱 Responsive and modern user interface
+
+## 🎯 User Roles
+
+### 👨‍🎓 Student
+Students can register, access scheduled examinations, attempt online tests, submit answers, view results, and track their academic performance.
+
+### 👨‍🏫 Teacher
+Teachers can create and schedule examinations, manage question banks, generate questions using AI assistance, monitor examinations, evaluate submissions, and analyze student performance.
+
+### 👨‍💼 Administrator
+Administrators can manage users, monitor examinations, manage the platform, and access overall examination analytics.
+
+## 🔄 Examination Workflow
+
+Teacher Login  
+↓  
+Create Examination  
+↓  
+Add Questions / Generate Questions Using AI  
+↓  
+Review & Publish  
+↓  
+Schedule Examination  
+↓  
+Student Login  
+↓  
+Start Examination  
+↓  
+AI-Assisted Proctoring & Anti-Cheating Monitoring  
+↓  
+Submit Examination  
+↓  
+Automatic Evaluation  
+↓  
+Result & Performance Analysis
+
+## 🛠️ Technology Stack
+
+### Frontend
+- React 19
+- Vite
+- Tailwind CSS v4
+- React Router v7
+
+### Backend
+- REST API architecture
+- Authentication & authorization
+- Exam management APIs
+- Question management
+- Submission and evaluation system
+- Result and analytics processing
+
+### AI & Intelligent Features
+- AI-assisted question generation
+- AI-assisted examination proctoring
+- Suspicious activity detection
+- Intelligent examination monitoring
+
+## 🎯 Project Objective
+
+The main objective of EduExam is to provide a centralized and secure digital examination environment that reduces manual examination work, improves assessment efficiency, supports AI-assisted content generation, and helps educational institutions conduct reliable online examinations.
+
+## 🌟 Future Scope
+
+- Advanced AI proctoring
+- Face verification
+- Voice/activity monitoring
+- Advanced cheating detection
+- AI-based performance recommendations
+- Automated question difficulty adjustment
+- Institution-level analytics
+- Online certification and assessment system
